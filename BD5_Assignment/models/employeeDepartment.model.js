@@ -1,26 +1,26 @@
 const { DataTypes, sequelize } = require("../lib/");
-const { employees } = require("./employees.model");
-const { departments } = require("./departments.model");
+const { employee } = require("./employee.model");
+const { department } = require("./department.model");
 
 let employeeDepartment = sequelize.define("employeeDepartment", {
     employeeId: {
         type: DataTypes.INTEGER,
         reference: {
-            model: employees,
+            model: employee,
             key: "id",
         },
     },
     departmentId: {
         type: DataTypes.INTEGER,
         reference: {
-            model: departments,
+            model: department,
             key: "id"
         },
     },
 });
 
 
-employees.belongsToMany(departments, {through: employeeDepartment});
-departments.belongsToMany(employees, {through: employeeDepartment});
+employee.belongsToMany(department, {through: employeeDepartment});
+department.belongsToMany(employee, {through: employeeDepartment});
 
-modules.exports = {employeeDepartment};
+module.exports = {employeeDepartment};

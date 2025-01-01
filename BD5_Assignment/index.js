@@ -9,11 +9,11 @@ const { Op } = require("@sequelize/core")
 const app = express();
 app.use(cors())
 
-const employees = require("./models/employees.model");
-const departments = require("./models/departments.model");
-const roles = require("./models/roles.model");
-const employeeDepartment = require("./models/employeeDepartment.model");
-const employeeRole = require("./models/employeeRole.model");
+const { employee } = require("./models/employee.model");
+const { department } = require("./models/department.model");
+const { role }  = require("./models/role.model");
+const { employeeDepartment } = require("./models/employeeDepartment.model");
+const { employeeRole } = require("./models/employeeRole.model");
 
 // ---------------------------------------------------------- //
 //          Chapter 5: Employee Management System             //

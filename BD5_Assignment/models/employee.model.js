@@ -1,6 +1,6 @@
-let { DataTypes, sequelize } = require("../lib/");
+let { DataTypes, sequelize } = require("../lib");
 
-let employees = sequelize.define("employees", {
+let employee = sequelize.define("employee", {
     name: {
         type: DataTypes.STRING,
     },
@@ -10,4 +10,4 @@ let employees = sequelize.define("employees", {
     }
 });
 
-module.exports = {employees};
+module.exports = {employee};
