@@ -102,6 +102,23 @@ async function getEmployeeDepartments(employeeId) {
 
 //  |-----||-----||-----||-----||-----||-----||-----||-----||-----||-----|
 
+// Endpoint - 1 (Get All Employees)
+async function fetchAllEmployee() {
+  let response = await employee.findAll();
+  return {'employees':response};
+}
+
+app.get('/employees', async (req, res) => {
+  try {
+    let result = await fetchAllEmployee();
+    if (result.employees.length === 0) {
+      return res.status(404).json{message: 'No Employee Found!'};
+    }
+    return res.status.json(result);
+  } catch (error) {
+    return res.status(500).json({error: error.message});
+  }
+});
 
 // Application Listening
 app.listen(port, () => {
