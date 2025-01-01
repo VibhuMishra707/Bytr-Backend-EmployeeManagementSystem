@@ -3,6 +3,9 @@ const port = 3000;
 const express = require("express");
 const cors = require("cors");
 
+const { sequelize } = require("./lib/index");
+const { Op } = require("@sequelize/core")
+
 const app = express();
 app.use(cors())
 
