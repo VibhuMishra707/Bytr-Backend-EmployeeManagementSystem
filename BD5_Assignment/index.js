@@ -345,7 +345,7 @@ app.post('/employees/update/:id', async (req, res) => {
     let id = parseInt(req.params.id);
     let updateEmployeeData = req.body;
     
-    let result = updateEmployeeDetail(id, updateEmployeeData);
+    let result = await updateEmployeeDetail(id, updateEmployeeData);
     if (result === null) {
       return res.status(404).json({message: "User Not Found!"});
     }
