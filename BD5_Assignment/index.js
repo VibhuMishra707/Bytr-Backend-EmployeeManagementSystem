@@ -167,6 +167,8 @@ app.get('/employees/details/:id', async (req, res) => {
  }
 });
 
+// Path = /employees/details/1
+
 // Endpoint  - 3 (Get Employees by Department)
 async function fetchEmployeesByDepartment(departmentID) {
   let reqEmployeeIDs = await employeeDepartment.findAll({where: {departmentId: departmentID}, attributes: ['employeeId']});
@@ -210,7 +212,7 @@ async function fetchEmployeesByDepartment(departmentID) {
 
   let employeeWithDetails = [];
   for (let reqEmpID of reqEmployeeIDs) {
-    let detailedEmployee = await fetchDetailedEmployeeByID(reqEmpID.employeeId);
+    let detailedEmployee = await fetchDetailedEmployeesByID(reqEmpID.employeeId);
     employeeWithDetails.push(detailedEmployee);
   }
   return {employees: employeeWithDetails}
@@ -236,6 +238,8 @@ app.get('/employees/department/:id', async (req, res) => {
   }
 });
 
+// Path = /employees/department/1
+
 // Endpoint - 4 (Get All Employees by Role)
 async function fetchAllEmployeesByRole(roleID) {
   let reqEmployeeIDs = await employeeRole.findAll({where: {roleId: roleID}, attributes: ['employeeId']});
@@ -244,7 +248,7 @@ async function fetchAllEmployeesByRole(roleID) {
   }
   let employeeWithDetails = [];
   for (let reqEmpID of reqEmployeeIDs) {
-    let detailedEmployee = await fetchDetailedEmployeeByID(reqEmpID.employeeId);
+    let detailedEmployee = await fetchDetailedEmployeesByID(reqEmpID.employeeId);
     employeeWithDetails.push(detailedEmployee); 
   }
   return {employees: employeeWithDetails};
@@ -269,6 +273,8 @@ app.get('/employees/role/:roleId', async (req, res) => {
   }
 });
 
+// Path = /employees/role/1
+
 // Endpoint - 5.1 (Get Employees Sorted by Name)
 async function fetchAllEmployeesSorted(order) {
   let response = await employee.findAll({order: [['name', order]]});
@@ -283,7 +289,7 @@ async function fetchAllEmployeesSorted(order) {
 app.get('/employees/sort-by-name', async (req, res) => {
   try {
     let order = req.query.order;
-    if (!['ASC', 'DESC'].includes(order)) {
+    if (!['asc', 'desc'].includes(order.toLowerCase())) {
       return res.status(400).json({message: "Invalid 'order' parameter. Use 'ASC' or 'DESC'"})
     }
     let result = await fetchAllEmployeesSorted(order);
@@ -295,6 +301,9 @@ app.get('/employees/sort-by-name', async (req, res) => {
     return res.status(500).json({error: error.message});
   }
 })
+
+// Path = /employees/sort-by-name?order=asc
+// Path = /employees/sort-by-name?order=desc
 
 // Endpoint - 5.2  (Add a New Employee)
 async function addNewEmployee(newEmployeeData) {
@@ -329,6 +338,16 @@ app.post('/employees/new', async (req, res) => {
   }
 });
 
+// Path = /employees/new
+/* --- Body ---
+{
+    "name": "Karan Mehta",
+    "email": "karan.mehta@example.com",
+    "departmentId": 1,
+    "roleId": 1
+}
+*/
+
 // Endpoint - 6 (Update Employee Details)
 async function updateEmployeeDetail(id, updatedEmployeeData) {
   let updateEmployee = await employee.findOne({where: {id}});
@@ -355,6 +374,13 @@ app.post('/employees/update/:id', async (req, res) => {
   }
 });
 
+// Path = /employees/update/4
+/* --- Body ---
+{
+  'email': 'karan.m@example.com',
+}
+*/
+
 // Endpoint - 7 (Delete an Employee)
 async function deleteEmployeeByID(deleteEmployee) {
   let deletedEmployee = await employee.destroy({where: {id: deleteEmployee.id}});
@@ -377,6 +403,13 @@ app.post('/employees/delete', async(req, res) => {
     return res.status(500).json({error: error.message});
   }
 });
+
+// Path = /employees/delete
+/* --- Body ---
+{ 
+  'id': 4 
+}
+*/
 
 // Application Listening
 app.listen(port, () => {
