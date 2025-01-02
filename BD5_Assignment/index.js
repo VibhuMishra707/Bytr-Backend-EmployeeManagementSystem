@@ -298,18 +298,12 @@ app.get('/employees/sort-by-name', async (req, res) => {
 
 // Endpoint - 5.2  (Add a New Employee)
 async function addNewEmployee(newEmployeeData) {
-  let isDepartmentExist = await department.findOne({where: {id: updatedEmployeeData.departmentId}});
-  let isRoleExist = await role.findOne({where: {id: updatedEmployeeData.roleId}});
-
-  if (isDepartmentExist !== null || isRoleExist !== null) {
-    let newEmployeeRecord = await employee.create({name: newEmployeeData.name, email: newEmployeeData.email});
-    await employeeDepartment.create({employeeId: newEmployeeRecord.id, departmentId: newEmployeeData.departmentId});
-    await employeeRole.create({employeeId: newEmployeeRecord.id, roleId: newEmployeeData.roleId});
-    
-    let getNewEmployeeDetails = await getEmployeeDetails(newEmployeeRecord);
-    return {newEmployee: getNewEmployeeDetails};
-  }
-  return null;
+  let newEmployeeRecord = await employee.create({name: newEmployeeData.name, email: newEmployeeData.email});
+  await employeeDepartment.create({employeeId: newEmployeeRecord.id, departmentId: newEmployeeData.departmentId});
+  await employeeRole.create({employeeId: newEmployeeRecord.id, roleId: newEmployeeData.roleId});
+  
+  let getNewEmployeeDetails = await getEmployeeDetails(newEmployeeRecord);
+  return {newEmployee: getNewEmployeeDetails};
 }
 
 app.post('/employees/new', async (req, res) => {
@@ -359,7 +353,7 @@ app.post('/employees/update/:id', async (req, res) => {
 async function deleteEmployeeByID(deleteEmployee) {
   let deletedEmployee = await employee.destroy({where: {id: deleteEmployee.id}});
   if (deletedEmployee) {
-    return {message: `Employee with ID ${employeeID} has been deleted`};
+    return {message: `Employee with ID ${deleteEmployee.id} has been deleted`};
   }
   return null;
 }
@@ -376,7 +370,7 @@ app.post('/employees/delete', async(req, res) => {
   } catch (error) {
     return res.status(500).json({error: error.message});
   }
-})
+});
 
 // Application Listening
 app.listen(port, () => {
