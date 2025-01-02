@@ -331,51 +331,25 @@ app.post('/employees/new', async (req, res) => {
 
 // Endpoint - 6 (Update Employee Details)
 async function updateEmployeeDetail(id, updatedEmployeeData) {
-  let isDepartmentExist = await department.findOne({where: {id: updatedEmployeeData.departmentId}});
-  let isRoleExist = await role.findOne({where: {id: updatedEmployeeData.roleId}});
-
-  if (isDepartmentExist !== null || isRoleExist !== null) {
-    let updateEmployeeRecord = await employee.findOne({where: {id}});
-    if (updateEmployeeRecord === null) {
-      return -1;
-    }
-    updateEmployeeRecord.set({name: updatedEmployeeData.name, email: updatedEmployeeData.email});
-    await updateEmployeeRecord.save();
-
-    let updateEmployeeDepartmentRecord = await employeeDepartment.findOne({where: {employeeId: updateEmployeeRecord.id}});
-    if (updateEmployeeDepartmentRecord.departmentId !== updatedEmployeeData.departmentId) {
-      updateEmployeeDepartmentRecord.set({departmentId: updatedEmployeeData.departmentId});
-      await updateEmployeeDepartmentRecord.save();
-    }
-
-    let updateEmployeeRoleRecord = await employeeRole.findOne({where: {employeeId: updateEmployeeRecord.id}});
-    if (updateEmployeeRoleRecord.roleId !== updatedEmployeeData.roleId) {
-      updateEmployeeRoleRecord.set({roleId: updatedEmployeeData.roleId});
-      await updateEmployeeRoleRecord.save();
-    }
-  } else {
-    return -2;
+  let updateEmployee = await employee.findOne({where: {id}});
+  if (updateEmployee) {
+    updateEmployee.set(updatedEmployeeData);
+    await updateEmployee.save();
+    return {updatedEmployee: await getEmployeeDetails(updateEmployee)}
   }
-  let response = await getEmployeeDetails(updateEmployeeRecord);
-  return {updatedEmployee: response};
+  return null;
 }
 
 app.post('/employees/update/:id', async (req, res) => {
   try {
     let id = parseInt(req.params.id);
-    let updatedEmployeeData = req.body;
-    if (!updatedEmployeeData.name || !updatedEmployeeData.email ||
-      !updatedEmployeeData.departmentId || !updatedEmployeeData.roleId) {
-        return res.status(400).json({message: "Invalid employee data, please provide all required fields."});
-      }
-    let result = await updateEmployeeDetail(id, updatedEmployeeData);
-    if (result === -1) {
-      return res.status(404).json({message: "Employee not found!"});
+    let updateEmployeeData = req.body;
+    
+    let result = updateEmployeeDetail(id, updateEmployeeData);
+    if (result === null) {
+      return res.status(404).json({message: "User Not Found!"});
     }
-    if (result === -2) {
-      return res.status(404).json({message: "Either Department or Role does not exist."});
-    }
-    return res.status(200).json(result);
+    return res.status(200).json(result)
   } catch (error) {
     return res.status(500).json({error: error.message});
   }
