@@ -298,12 +298,18 @@ app.get('/employees/sort-by-name', async (req, res) => {
 
 // Endpoint - 5.2  (Add a New Employee)
 async function addNewEmployee(newEmployeeData) {
-  let newEmployeeRecord = await employee.create({name: newEmployeeData.name, email: newEmployeeData.email});
-  await employeeDepartment.create({employeeId: newEmployeeRecord.id, departmentId: newEmployeeData.departmentId});
-  await employeeRole.create({employeeId: newEmployeeRecord.id, roleId: newEmployeeData.roleId});
-  
-  let getNewEmployeeDetails = await getEmployeeDetails(newEmployeeRecord);
-  return {newEmployee: getNewEmployeeDetails};
+  let isDepartmentExist = await department.findOne({where: {id: newEmployeeData.departmentId}});
+  let isRoleExist = await role.findOne({where: {id: newEmployeeData.roleId}});
+
+  if (isDepartmentExist !== null || isRoleExist !== null) {
+    let newEmployeeRecord = await employee.create({name: newEmployeeData.name, email: newEmployeeData.email});
+    await employeeDepartment.create({employeeId: newEmployeeRecord.id, departmentId: newEmployeeData.departmentId});
+    await employeeRole.create({employeeId: newEmployeeRecord.id, roleId: newEmployeeData.roleId});
+    
+    let getNewEmployeeDetails = await getEmployeeDetails(newEmployeeRecord);
+    return {newEmployee: getNewEmployeeDetails};
+  }
+  return null;
 }
 
 app.post('/employees/new', async (req, res) => {
